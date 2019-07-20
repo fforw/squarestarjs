@@ -1,0 +1,10 @@
+bin
+bower.json
+demo
+index.d.ts
+karma.benchmark.conf.js
+karma.conf.js
+test
+webpack.config.js
+.babelrc
+.idea

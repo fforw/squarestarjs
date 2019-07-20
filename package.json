@@ -6,8 +6,9 @@
     "description": "Asynchronous A* Pathfinding API",
     "scripts": {
         "build": "webpack && webpack --minify",
-        "test": "./node_modules/karma/bin/karma start ./karma.conf.js",
-        "benchmark": "./node_modules/karma/bin/karma start ./karma.benchmark.conf.js",
+        "_test": "./node_modules/karma/bin/karma start ./karma.conf.js",
+        "_benchmark": "./node_modules/karma/bin/karma start ./karma.benchmark.conf.js",
+        "test": "cross-env NODE_ENV=development BABEL_ENV=test mocha --require @babel/register -R spec test/",
         "watch": "webpack -w"
     },
     "keywords": [
@@ -28,16 +29,22 @@
         "url": "http://bryce.is"
     },
     "devDependencies": {
-        "babel-core": "^6.8.0",
-        "babel-loader": "^6.2.4",
-        "webpack": "^1.13.0",
+        "@babel/preset-env": "^7.5.5",
+        "@babel/register": "^7.5.5",
+        "@babel/core": "^7.5.5",
+        "babel-loader": "^8.0.6",
+        "babel-plugin-espower": "^3.0.1",
+        "cross-env": "^5.2.0",
         "jasmine-core": "^2.8.0",
         "karma": "^2.0.0",
         "karma-benchmark": "^0.7.1",
         "karma-benchmarkjs-reporter": "^1.0.0",
         "karma-coverage": "^1.1.1",
         "karma-jasmine": "^1.1.1",
-        "karma-phantomjs-launcher": "^1.0.4"
+        "karma-phantomjs-launcher": "^1.0.4",
+        "mocha": "^6.2.0",
+        "power-assert": "^1.6.1",
+        "webpack": "^1.13.0"
     },
     "dependencies": {
         "heap": "0.2.6"

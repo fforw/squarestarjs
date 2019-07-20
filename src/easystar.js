@@ -52,6 +52,8 @@ EasyStar.js = function () {
     let syncEnabled = false;
     let pointsToAvoid = {};
     let collisionGrid;
+    let collisionGridWidth;
+    let collisionGridHeight;
     const costMap = {};
     let pointsToCost = {};
     let directionalConditions = {};
@@ -117,18 +119,45 @@ EasyStar.js = function () {
      *
      * @param {Array} grid The collision grid that this EasyStar instance will read from.
      * This should be a 2D Array of Numbers.
+     * @param {Number} [width]
+     * @param {Number} [height]
      **/
-    this.setGrid = function (grid) {
+    this.setGrid = function (grid, width, height) {
+
         collisionGrid = grid;
 
-        //Setup cost map
-        for (let y = 0; y < collisionGrid.length; y++)
+        if (width === undefined || height === undefined)
         {
-            for (let x = 0; x < collisionGrid[0].length; x++)
+            const {length} = grid;
+            const size = Math.sqrt(length);
+            if (size % 1)
             {
-                if (!costMap[collisionGrid[y][x]])
+                throw new Error("Grid is not of square size. Define width and height");
+            }
+
+            collisionGridWidth = size;
+            collisionGridHeight = size;
+        }
+        else
+        {
+            if (grid.length !== width * height)
+            {
+                throw new Error("The grid length does not match the given width and height")
+            }
+
+            collisionGridWidth = width;
+            collisionGridHeight = height;
+        }
+
+        //Setup cost map
+        for (let y = 0; y < collisionGridHeight; y++)
+        {
+            for (let x = 0; x < collisionGridWidth; x++)
+            {
+                const tile = collisionGrid[y * collisionGridWidth + x];
+                if (!costMap[tile])
                 {
-                    costMap[collisionGrid[y][x]] = 1
+                    costMap[tile] = 1
                 }
             }
         }
@@ -306,8 +335,8 @@ EasyStar.js = function () {
 
         // Start or endpoint outside of scope.
         if (startX < 0 || startY < 0 || endX < 0 || endY < 0 ||
-            startX > collisionGrid[0].length - 1 || startY > collisionGrid.length - 1 ||
-            endX > collisionGrid[0].length - 1 || endY > collisionGrid.length - 1)
+            startX > collisionGridWidth - 1 || startY > collisionGridHeight - 1 ||
+            endX > collisionGridWidth - 1 || endY > collisionGridHeight - 1)
         {
             throw new Error("Your start or end point is outside the scope of your grid.");
         }
@@ -320,7 +349,7 @@ EasyStar.js = function () {
         }
 
         // End point is not an acceptable tile.
-        const endTile = collisionGrid[endY][endX];
+        const endTile = collisionGrid[endY * collisionGridWidth +  endX];
         let isAcceptable = false;
         for (let i = 0; i < acceptableTiles.length; i++)
         {
@@ -446,12 +475,12 @@ EasyStar.js = function () {
                 checkAdjacentNode(instance, searchNode,
                     0, -1, STRAIGHT_COST * getTileCost(searchNode.x, searchNode.y - 1));
             }
-            if (searchNode.x < collisionGrid[0].length - 1)
+            if (searchNode.x < collisionGridWidth - 1)
             {
                 checkAdjacentNode(instance, searchNode,
                     1, 0, STRAIGHT_COST * getTileCost(searchNode.x + 1, searchNode.y));
             }
-            if (searchNode.y < collisionGrid.length - 1)
+            if (searchNode.y < collisionGridHeight - 1)
             {
                 checkAdjacentNode(instance, searchNode,
                     0, 1, STRAIGHT_COST * getTileCost(searchNode.x, searchNode.y + 1));
@@ -475,7 +504,7 @@ EasyStar.js = function () {
                             -1, -1, DIAGONAL_COST * getTileCost(searchNode.x - 1, searchNode.y - 1));
                     }
                 }
-                if (searchNode.x < collisionGrid[0].length - 1 && searchNode.y < collisionGrid.length - 1)
+                if (searchNode.x < collisionGridWidth - 1 && searchNode.y < collisionGridHeight - 1)
                 {
 
                     if (allowCornerCutting ||
@@ -487,7 +516,7 @@ EasyStar.js = function () {
                             1, 1, DIAGONAL_COST * getTileCost(searchNode.x + 1, searchNode.y + 1));
                     }
                 }
-                if (searchNode.x < collisionGrid[0].length - 1 && searchNode.y > 0)
+                if (searchNode.x < collisionGridWidth - 1 && searchNode.y > 0)
                 {
 
                     if (allowCornerCutting ||
@@ -499,7 +528,7 @@ EasyStar.js = function () {
                             1, -1, DIAGONAL_COST * getTileCost(searchNode.x + 1, searchNode.y - 1));
                     }
                 }
-                if (searchNode.x > 0 && searchNode.y < collisionGrid.length - 1)
+                if (searchNode.x > 0 && searchNode.y < collisionGridHeight - 1)
                 {
 
                     if (allowCornerCutting ||
@@ -544,9 +573,9 @@ EasyStar.js = function () {
                 return false
             }
         }
-        for (var i = 0; i < acceptableTiles.length; i++)
+        for (let i = 0; i < acceptableTiles.length; i++)
         {
-            if (collisionGrid[y][x] === acceptableTiles[i])
+            if (collisionGrid[y * collisionGridWidth + x] === acceptableTiles[i])
             {
                 return true;
             }
@@ -601,7 +630,7 @@ EasyStar.js = function () {
 
     function getTileCost(x, y)
     {
-        return (pointsToCost[y] && pointsToCost[y][x]) || costMap[collisionGrid[y][x]]
+        return (pointsToCost[y] && pointsToCost[y][x]) || costMap[collisionGrid[y * collisionGridWidth + x]]
     }
 
 
@@ -619,9 +648,10 @@ EasyStar.js = function () {
             instance.nodeHash[y] = {};
         }
         const simpleDistanceToTarget = getDistance(x, y, instance.endX, instance.endY);
+        let costSoFar;
         if (parent !== null)
         {
-            var costSoFar = parent.costSoFar + cost;
+            costSoFar = parent.costSoFar + cost;
         }
         else
         {

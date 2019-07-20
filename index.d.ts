@@ -45,9 +45,9 @@ export class js {
    * Sets the collision grid that EasyStar uses.
    *
    * @param {Array} grid The collision grid that this EasyStar instance will read from.
-   * This should be a 2D Array of Numbers.
+   * This should be a flat array of Numbers with one row after the other.
    */
-  setGrid(grid: number[][]): void
+  setGrid(grid: number[]): void
 
   /**
    * Sets the tile cost for a particular tile type.

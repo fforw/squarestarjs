@@ -12,7 +12,9 @@
 * **Bower:** `bower install easystarjs`
 
 ## Description 
-easystar.js is an asynchronous A* pathfinding API written in Javascript for use in your HTML5 games and interactive projects. The goal of this project is to make it easy and fast to implement performance conscious pathfinding. 
+easystar.js is an asynchronous A* pathfinding API written in Javascript for use in your HTML5 games and interactive projects. The goal of this project is to make it easy and fast to implement performance conscious pathfinding.
+
+This fork uses simple one-dimensional arrays as grid in contrast to the original easystar.js. 
 
 ## Features
 
@@ -30,7 +32,7 @@ easystar.js is an asynchronous A* pathfinding API written in Javascript for use 
 var easystar = new EasyStar.js();
 ```
 ```javascript
-easystar.setGrid(twoDimensionalArray);
+easystar.setGrid(oneDimensionalArray);
 ```
 ```javascript
 easystar.setAcceptableTiles(arrayOfAcceptableTiles);
@@ -88,11 +90,11 @@ var easystar = new easystarjs.js();
 
 Create a grid, or tilemap. You may have made this with a level editor, or procedurally. Let's keep it simple for this example.
 ```javascript
-var grid = [[0,0,1,0,0],
-            [0,0,1,0,0],
-            [0,0,1,0,0],
-            [0,0,1,0,0],
-            [0,0,0,0,0]];
+var grid = [0,0,1,0,0,
+            0,0,1,0,0,
+            0,0,1,0,0,
+            0,0,1,0,0,
+            0,0,0,0,0];
 ```
 
 Set our grid.
